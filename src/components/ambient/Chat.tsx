@@ -3,10 +3,20 @@
 import { useState } from 'react';
 
 import dynamic from 'next/dynamic';
+import MissionLoader from './MissionLoader';
 
-const UserLoopMission = dynamic(() => import('@/components/missions/mission1/UserLoopMission'), { ssr: false });
-const Web2ApiMission = dynamic(() => import('@/components/missions/mission2/Web2ApiMission'), { ssr: false });
-const Web3OnChainMission = dynamic(() => import('@/components/missions/mission3/Web3OnChainMission'), { ssr: false });
+const UserLoopMission = dynamic(() => import('@/components/missions/mission1/UserLoopMission'), {
+    ssr: false,
+    loading: () => <MissionLoader />
+});
+const Web2ApiMission = dynamic(() => import('@/components/missions/mission2/Web2ApiMission'), {
+    ssr: false,
+    loading: () => <MissionLoader />
+});
+const Web3OnChainMission = dynamic(() => import('@/components/missions/mission3/Web3OnChainMission'), {
+    ssr: false,
+    loading: () => <MissionLoader />
+});
 
 export default function Chat() {
     const [activeTab, setActiveTab] = useState(1);
