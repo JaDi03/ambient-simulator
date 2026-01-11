@@ -50,6 +50,7 @@ const SUB_MISSIONS: SubMission[] = [
 
 export default function Chat() {
     const [activeTab, setActiveTab] = useState(1);
+    const [web2Mode, setWeb2Mode] = useState<'manual' | 'auto'>('manual');
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [activeCode, setActiveCode] = useState('');
@@ -57,6 +58,9 @@ export default function Chat() {
     const [isTyping, setIsTyping] = useState(false);
     const [isVerifying, setIsVerifying] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Standard shared height for all panels
+    const PANEL_HEIGHT = "h-[820px]";
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -73,6 +77,20 @@ export default function Chat() {
     const handleSimulatedComplete = () => {
         setIsSimulating(false);
         handleSubmit(undefined, true);
+    };
+
+    const runWeb2Challenge = (step: number) => {
+        if (step === 1) {
+            setActiveCode(`// Challenge #1: Prepare Request\nconst payload = {\n  model: "zai-org/GLM-4.6",\n  messages: [{ role: "user", content: "Who is Ambient?" }],\n  wait_for_verification: true\n};`);
+            setIsSimulating(true);
+        } else if (step === 2) {
+            setActiveCode(`// Challenge #1: Execute Call\nconst response = await fetch("https://api.ambient.xyz/v1/chat/completions", {\n  method: "POST",\n  body: JSON.stringify(payload)\n});`);
+            setIsSimulating(true);
+        } else if (step === 3) {
+            setActiveCode(`// Challenge #1: Inspect Receipt\n// PoL Found: 0x72a...dff0\n// Consensus Status: 100% Verified\nconsole.log("Integrity Guaranteed.");`);
+            setIsSimulating(true);
+            setIsVerifying(true);
+        }
     };
 
     const handleSubmit = async (e?: React.FormEvent, forcePrompt?: boolean) => {
@@ -130,26 +148,26 @@ export default function Chat() {
     };
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8 w-full items-stretch justify-center max-h-[90vh]">
+        <div className="flex flex-col lg:flex-row gap-8 w-full items-stretch justify-center max-h-[92vh]">
 
-            {/* COLUMN 1: Description & Global Tab Selector (Left) */}
-            <div className="flex flex-col w-full lg:w-[450px] shrink-0 gap-6">
+            {/* COLUMN 1: Description & Global Tab Selector (Left - 450px) */}
+            <div className={`flex flex-col w-full lg:w-[450px] shrink-0 gap-6 ${PANEL_HEIGHT}`}>
                 {/* Description Box */}
-                <div className="glass-card bg-white/95 p-8 rounded-[2.5rem] shadow-xl border-cyan-500/10 text-left">
+                <div className="glass-card bg-white/95 p-8 rounded-[2.5rem] shadow-xl border-cyan-500/10 text-left h-[260px] shrink-0">
                     <div className="text-[10px] uppercase tracking-[0.4em] font-black text-cyan-600 mb-4">Introduction</div>
-                    <h3 className="text-2xl font-bold mb-4 tracking-tighter text-black">Ambient Simulator</h3>
+                    <h3 className="text-2xl font-bold mb-4 tracking-tighter text-black leading-none">Ambient Simulator</h3>
                     <p className="text-[14px] text-black/60 leading-relaxed font-medium">
-                        This environment simulates the interaction with the Ambient L1 Protocol. Explore how decentralized intelligence is verified through cryptography.
+                        Explore the decentralized machine intelligence protocol through live verification loops.
                     </p>
                     <div className="mt-4 p-4 bg-cyan-50/50 rounded-2xl border border-cyan-100/50">
                         <p className="text-[11px] text-cyan-800 font-bold leading-relaxed italic">
-                            "Verifiable machine intelligence at decentralized scale."
+                            "Verifiable AI at decentralized scale."
                         </p>
                     </div>
                 </div>
 
                 {/* Global Mission Selectors (1, 2, 3) */}
-                <div className="glass-card bg-white/95 p-8 rounded-[2.5rem] shadow-xl border-cyan-500/10 flex-grow">
+                <div className="glass-card bg-white/95 p-8 rounded-[2.5rem] shadow-xl border-cyan-500/10 flex-grow overflow-hidden">
                     <div className="text-[10px] uppercase tracking-[0.4em] font-black text-cyan-600 mb-6 text-left">Navigation Hub</div>
                     <div className="flex flex-col gap-4">
                         {[
@@ -160,7 +178,7 @@ export default function Chat() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`group flex items-center justify-between border-2 p-5 rounded-[2rem] text-left transition-all ${activeTab === tab.id ? 'bg-cyan-50 border-cyan-400/50 shadow-md' : 'bg-white border-transparent hover:border-cyan-400/30 hover:bg-zinc-50'}`}
+                                className={`group flex items-center justify-between border-2 p-5 rounded-[2rem] text-left transition-all ${activeTab === tab.id ? 'bg-cyan-50 border-cyan-400/50 shadow-md scale-[1.02]' : 'bg-white border-transparent hover:border-cyan-400/30 hover:bg-zinc-50'}`}
                             >
                                 <div className="flex items-center gap-4">
                                     <span className={`text-2xl font-black transition-colors ${activeTab === tab.id ? 'text-cyan-600' : 'text-black/10'}`}>0{tab.id}</span>
@@ -173,27 +191,27 @@ export default function Chat() {
                 </div>
             </div>
 
-            {/* COLUMN 2: Instructions Panel (Center) */}
-            <div className="flex flex-col w-full lg:w-[450px] shrink-0 gap-4">
+            {/* COLUMN 2: Instructions Panel (Center - 450px) */}
+            <div className={`flex flex-col w-full lg:w-[450px] shrink-0 ${PANEL_HEIGHT}`}>
                 <div className="glass-card bg-white/90 p-8 rounded-[2.5rem] shadow-xl border-cyan-500/10 overflow-y-auto h-full scrollbar-hide">
 
                     {activeTab === 1 && (
-                        <>
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="text-[10px] uppercase tracking-[0.4em] font-black text-cyan-600 mb-3 text-left">Community Activation</div>
                             <h2 className="text-3xl font-extralight mb-6 leading-tight tracking-tight text-left">User Loop: <br /> Use & Break It</h2>
 
                             <div className="space-y-6 mb-8 text-left">
                                 <div className="space-y-2">
                                     <h4 className="text-[11px] uppercase font-black text-black/40 tracking-wider">Step 1: Protocol Explorer</h4>
-                                    <p className="text-[13px] text-black/60 leading-relaxed">
+                                    <p className="text-[13px] text-black/60 leading-relaxed font-medium">
                                         Go to <a href="https://t.co/QLYcQ8tSPv" target="_blank" className="text-cyan-600 font-bold hover:underline">app.ambient.xyz</a> and start testing the network as per the <a href="https://x.com/ambient_xyz/status/1999168669641789680?s=20" target="_blank" className="text-cyan-600 font-bold hover:underline">official announcement</a>.
                                     </p>
                                 </div>
 
                                 <div className="space-y-2">
                                     <h4 className="text-[11px] uppercase font-black text-black/40 tracking-wider">Step 2: Community Reporting</h4>
-                                    <p className="text-[13px] text-black/60 leading-relaxed">
-                                        Submit research write-up in: <a href="https://discord.com/channels/1334942930695225365/1448970141940322354" target="_blank" className="bg-cyan-50 px-2 py-0.5 rounded text-cyan-700 font-bold hover:bg-cyan-100 transition-colors inline-flex items-center gap-1">testnet-feedback <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" /></svg></a>
+                                    <p className="text-[13px] text-black/60 leading-relaxed font-medium">
+                                        Submit research write-up in: <a href="https://discord.com/channels/1334942930695225365/1448970141940322354" target="_blank" className="bg-cyan-50 px-2 py-0.5 rounded text-cyan-700 font-bold hover:bg-cyan-100 transition-colors inline-flex items-center gap-1">testnet-feedback</a>
                                     </p>
                                 </div>
 
@@ -204,7 +222,7 @@ export default function Chat() {
 
                                     <div className="flex items-center gap-2 mb-4 text-cyan-600">
                                         <span className="text-[10px] uppercase font-black tracking-widest">Choose an option</span>
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="animate-bounce">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" className="animate-bounce">
                                             <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
                                         </svg>
                                     </div>
@@ -224,46 +242,98 @@ export default function Chat() {
                                             </button>
                                         ))}
                                     </div>
-
-                                    <p className="text-[10px] text-black/30 font-bold uppercase tracking-widest text-center">
-                                        Click a mission above, press send, or type your own prompt to start.
-                                    </p>
                                 </div>
                             </div>
-                        </>
+                        </div>
                     )}
 
                     {activeTab === 2 && (
-                        <>
-                            <div className="text-[10px] uppercase tracking-[0.4em] font-black text-cyan-600 mb-3 text-left">Technical Verification</div>
-                            <h2 className="text-3xl font-extralight mb-6 leading-tight tracking-tight text-left uppercase">Web2 Loop: PoL Audit</h2>
-                            <div className="space-y-6 text-left">
-                                <div className="space-y-2">
-                                    <h4 className="text-[11px] uppercase font-black text-black/40 tracking-wider">Step 1: Receipt Audit</h4>
-                                    <p className="text-[13px] text-black/60 leading-relaxed font-medium">Verify cryptographic integrity using Proof of Logits. Audit receipts at the official portal.</p>
-                                    <a href="https://ambient.xyz/verify" target="_blank" className="text-cyan-600 font-bold hover:underline text-[13px]">Open Audit Portal →</a>
-                                </div>
-                                <div className="space-y-2">
-                                    <h4 className="text-[11px] uppercase font-black text-black/40 tracking-wider">Step 2: Dev Console</h4>
-                                    <p className="text-[13px] text-black/60 leading-relaxed font-medium">Developers can request verified logs using the specialized header flags.</p>
-                                    <pre className="text-[10px] bg-black text-cyan-400 p-4 rounded-xl font-mono mt-2">
-                                        {`curl -X POST https://api.ambient.xyz/v1/chat/completions \\
-  -H "Authorization: Bearer KEY" \\
-  -d '{"wait_for_verification": true}'`}
-                                    </pre>
-                                </div>
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="text-[10px] uppercase tracking-[0.4em] font-black text-cyan-600 mb-3 text-left">Developer Mission</div>
+                            <h2 className="text-3xl font-extralight mb-2 leading-tight tracking-tight text-left uppercase">Web2 Loop:</h2>
+                            <h3 className="text-xl font-black text-black/40 mb-6 tracking-tighter uppercase italic leading-none">Micro-Challenge #1</h3>
+
+                            {/* Mission Strategy Selector */}
+                            <div className="flex bg-zinc-100 p-1 rounded-full mb-8 relative">
                                 <button
-                                    onClick={() => runSubMission(SUB_MISSIONS[0])}
-                                    className="w-full bg-cyan-700 text-white rounded-2xl py-5 font-black text-[12px] uppercase tracking-[0.3em] shadow-xl hover:bg-cyan-800 transition-all mt-6"
-                                >
-                                    Verify Now
-                                </button>
+                                    onClick={() => setWeb2Mode('manual')}
+                                    className={`flex-1 py-2 text-[10px] uppercase font-black rounded-full transition-all relative z-10 ${web2Mode === 'manual' ? 'text-cyan-800' : 'text-black/30'}`}
+                                >Manual Path</button>
+                                <button
+                                    onClick={() => setWeb2Mode('auto')}
+                                    className={`flex-1 py-2 text-[10px] uppercase font-black rounded-full transition-all relative z-10 ${web2Mode === 'auto' ? 'text-cyan-800' : 'text-black/30'}`}
+                                >Auto Path</button>
+                                <div className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full shadow-sm transition-all duration-300 ${web2Mode === 'auto' ? 'translate-x-full' : 'translate-x-0'}`} />
                             </div>
-                        </>
+
+                            <div className="space-y-6 text-left">
+                                <div className="p-5 bg-cyan-50/50 border border-cyan-100/50 rounded-2xl mb-4">
+                                    <p className="text-[12px] font-bold text-cyan-900 mb-1">Challenge Objective:</p>
+                                    <p className="text-[13px] text-cyan-800 leading-snug">Make your first verified inference call to the protocol.</p>
+                                </div>
+
+                                {web2Mode === 'manual' ? (
+                                    <div className="space-y-6 animate-in fade-in duration-300">
+                                        <div className="space-y-2">
+                                            <h4 className="text-[11px] uppercase font-black text-black/40 tracking-wider">Guide & Resources</h4>
+                                            <p className="text-[13px] text-black/60 leading-relaxed font-medium italic">Follow the official documentation to setup your environment and execute your first request.</p>
+                                        </div>
+                                        <div className="flex flex-col gap-3">
+                                            <a href="https://ambient.xyz/docs" target="_blank" className="flex items-center justify-between p-4 bg-white border-2 border-zinc-100 rounded-2xl hover:border-cyan-400 group transition-all">
+                                                <span className="text-[13px] font-black group-hover:text-cyan-700 uppercase tracking-tighter">1. API Documentation</span>
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-zinc-300 group-hover:text-cyan-500"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" /></svg>
+                                            </a>
+                                            <a href="https://ambient.xyz/verify" target="_blank" className="flex items-center justify-between p-4 bg-white border-2 border-zinc-100 rounded-2xl hover:border-cyan-400 group transition-all">
+                                                <span className="text-[13px] font-black group-hover:text-cyan-700 uppercase tracking-tighter">2. Audit Receipt Portal</span>
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-zinc-300 group-hover:text-cyan-500"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" /></svg>
+                                            </a>
+                                        </div>
+                                        <div className="mt-4 p-4 border-2 border-zinc-50 rounded-2xl">
+                                            <p className="text-[10px] uppercase font-black text-black/20 mb-2">Technical Insight</p>
+                                            <p className="text-[11px] text-black/40 leading-relaxed font-bold uppercase tracking-tight">The <span className="text-cyan-600">Proof of Logits</span> ensures that the model output you receive hasn't been tampered with by any intermediary node.</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4 animate-in fade-in duration-300">
+                                        <div className="space-y-2 mb-6">
+                                            <h4 className="text-[11px] uppercase font-black text-black/40 tracking-wider">Task Breakdown</h4>
+                                            <ul className="space-y-2">
+                                                {['Send prompt via Web2 API', 'Receive official response', 'Inspect cryptographic proof'].map((task, i) => (
+                                                    <li key={i} className="flex items-center gap-3 text-[12px] font-bold text-black/60">
+                                                        <div className="w-4 h-4 rounded-full border-2 border-cyan-200 flex items-center justify-center text-[8px] font-black text-cyan-600">{i + 1}</div>
+                                                        {task}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        <div className="flex flex-col gap-3">
+                                            <button onClick={() => runWeb2Challenge(1)} className="w-full text-left p-4 bg-white border-2 border-zinc-100 rounded-2xl hover:border-cyan-400 group transition-all">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[12px] font-black group-hover:text-cyan-700 uppercase tracking-tighter">01. Prepare Request</span>
+                                                    <div className="w-6 h-6 rounded-full bg-cyan-50 flex items-center justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" className="text-cyan-600"><path d="M5 12h14M12 5l7 7-7 7" /></svg></div>
+                                                </div>
+                                            </button>
+                                            <button onClick={() => runWeb2Challenge(2)} className="w-full text-left p-4 bg-white border-2 border-zinc-100 rounded-2xl hover:border-cyan-400 group transition-all">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[12px] font-black group-hover:text-cyan-700 uppercase tracking-tighter">02. Execute Call</span>
+                                                    <div className="w-6 h-6 rounded-full bg-cyan-50 flex items-center justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" className="text-cyan-600"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></div>
+                                                </div>
+                                            </button>
+                                            <button onClick={() => runWeb2Challenge(3)} className="w-full text-left p-4 bg-white border-2 border-zinc-100 rounded-2xl hover:border-cyan-400 group transition-all">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[12px] font-black group-hover:text-cyan-700 uppercase tracking-tighter">03. Audit Receipt</span>
+                                                    <div className="w-6 h-6 rounded-full bg-cyan-700 flex items-center justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" className="text-white"><path d="M20 6L9 17l-5-5" /></svg></div>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     )}
 
                     {activeTab === 3 && (
-                        <div className="flex flex-col items-center justify-center h-full text-center opacity-40">
+                        <div className="flex flex-col items-center justify-center h-full text-center opacity-40 animate-in zoom-in duration-500">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mb-4"><path d="M12 2v20M2 12h20" /></svg>
                             <h3 className="text-xl font-black uppercase tracking-widest">Web3 Loop</h3>
                             <p className="text-sm font-medium">Ledger Settlement Integration Coming Soon.</p>
@@ -273,20 +343,20 @@ export default function Chat() {
                 </div>
             </div>
 
-            {/* COLUMN 3: Status Console & Chat Result (Right) */}
-            <div className="flex flex-col w-full lg:w-[850px] shrink-0 gap-4">
+            {/* COLUMN 3: Console & Chat Result (Right - 850px) */}
+            <div className={`flex flex-col w-full lg:w-[850px] shrink-0 gap-4 ${PANEL_HEIGHT}`}>
 
-                {/* Simulator Panel */}
-                <div className="w-full h-[200px] shrink-0">
+                {/* Simulator Panel (200px fixed) */}
+                <div className="w-full h-[220px] shrink-0">
                     <CodeSimulator
-                        code={activeCode || "// Ambient Unified Simulator v3.6.0\n// Awaiting protocol trigger from the Activation Hub..."}
+                        code={activeCode || "// Ambient Unified Simulator v3.7.0\n// Awaiting protocol trigger from the Mission Controller..."}
                         isActive={isSimulating}
                         onComplete={handleSimulatedComplete}
                     />
                 </div>
 
-                {/* Chat / Result Panel */}
-                <div className="glass-card bg-white/40 p-8 flex flex-col items-center shadow-2xl w-full border-cyan-500/10 rounded-[2.5rem] flex-grow">
+                {/* Chat / Result Panel (Flexible within height) */}
+                <div className="glass-card bg-white/40 p-8 flex flex-col items-center shadow-2xl w-full border-cyan-500/10 rounded-[2.5rem] flex-grow overflow-hidden">
                     <div
                         ref={scrollRef}
                         className="flex flex-col gap-6 overflow-y-auto mb-6 pr-4 scrollbar-hide w-full flex-grow h-0"
@@ -301,7 +371,7 @@ export default function Chat() {
                         )}
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[85%] px-6 py-3.5 rounded-[1.5rem] text-[15px] leading-relaxed shadow-sm font-medium ${msg.role === 'user'
+                                <div className={`max-w-[85%] px-7 py-4 rounded-[1.8rem] text-[15px] shadow-sm font-medium leading-relaxed ${msg.role === 'user'
                                     ? 'bg-cyan-100/50 text-cyan-900 rounded-tr-none border border-cyan-200/50'
                                     : 'bg-white border border-cyan-500/10 text-black/90 rounded-tl-none shadow-md'
                                     }`}>
@@ -316,25 +386,25 @@ export default function Chat() {
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder={isSimulating ? "Decoding protocol..." : "Execute prompt..."}
+                            placeholder={isSimulating ? "Decoding inference..." : "Execute prompt..."}
                             disabled={isSimulating}
-                            className="w-full px-8 py-5 bg-cyan-50/50 border-2 border-cyan-100/30 rounded-full text-base focus:outline-none focus:border-cyan-500 transition-all shadow-xl pr-20 font-semibold disabled:opacity-50 placeholder:text-cyan-900/20"
+                            className="w-full px-10 py-6 bg-cyan-50/50 border-2 border-cyan-100/30 rounded-full text-base focus:outline-none focus:border-cyan-500 transition-all shadow-xl pr-24 font-bold disabled:opacity-50 placeholder:text-cyan-900/10"
                         />
                         <button
                             type="submit"
-                            className="absolute right-5 top-2.5 p-4 bg-cyan-700 text-white rounded-full hover:bg-cyan-800 transition-all disabled:opacity-30 shadow-2xl"
+                            className="absolute right-6 top-3 p-4 bg-cyan-700 text-white rounded-full hover:bg-cyan-800 transition-all disabled:opacity-30 shadow-2xl"
                             disabled={isTyping || isSimulating}
                         >
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                             </svg>
                         </button>
                     </form>
 
                     {isVerifying && (
-                        <div className="mt-4 flex items-center gap-3 bg-cyan-50/80 px-5 py-1.5 rounded-full border border-cyan-100/50 shadow-sm">
-                            <div className="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_10px_#00f2ff]" />
-                            <span className="text-[10px] uppercase tracking-[0.3em] font-black text-cyan-700">Proof Verified</span>
+                        <div className="mt-4 flex items-center gap-3 bg-cyan-50/80 px-6 py-2 rounded-full border border-cyan-100/50 shadow-sm animate-bounce-short">
+                            <div className="w-3 h-3 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_12px_#00f2ff]" />
+                            <span className="text-[11px] uppercase tracking-[0.4em] font-black text-cyan-800">Inference Verified</span>
                         </div>
                     )}
                 </div>
