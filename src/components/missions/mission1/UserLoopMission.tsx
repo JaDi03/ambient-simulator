@@ -235,6 +235,12 @@ export default function UserLoopMission() {
                         </button>
                     </form>
 
+                    {!isVerifying && !isSimulating && (
+                        <p className="mt-3 text-[11px] text-cyan-800/60 font-medium animate-in fade-in slide-in-from-top-1">
+                            Press <span className="font-black text-cyan-700">Enter</span> to execute or type your own prompt.
+                        </p>
+                    )}
+
                     {isVerifying && (
                         <div className="mt-4 flex items-center gap-3 bg-cyan-50/80 px-6 py-2 rounded-full border border-cyan-100/50 shadow-sm animate-bounce-short">
                             <div className="w-3 h-3 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_12px_#00f2ff]" />
