@@ -29,8 +29,19 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## 🚀 Deploying to Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This application is optimized for Vercel.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1.  **Push to GitHub:** Ensure your code is pushed to a GitHub repository.
+2.  **Import to Vercel:**
+    *   Go to your [Vercel Dashboard](https://vercel.com/dashboard).
+    *   Click "Add New..." -> "Project".
+    *   Import your `ambient-showcase` repository.
+3.  **Configure Project:**
+    *   **Framework:** Next.js (Auto-detected).
+    *   **Environment Variables:** Add the following key:
+        *   `AMBIENT_API_KEY`: Your Ambient API Key (required for Mission 1 Chat).
+4.  **Deploy:** Click "Deploy".
+
+Once deployed, your app will be live and SSL secured automatically.
