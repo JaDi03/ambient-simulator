@@ -51,9 +51,23 @@ export default function VerificationPortal() {
                                 <span className="text-cyan-600 font-bold uppercase">Inference Certificate</span>
                                 <span className="text-black/30">v1.0.4-verified</span>
                             </div>
-                            <pre className="whitespace-pre-wrap">
+                            <pre className="whitespace-pre-wrap mb-4">
                                 {JSON.stringify(lastReceipt, null, 2)}
                             </pre>
+
+                            {(lastReceipt?.inference_id || lastReceipt?.id) && (
+                                <a
+                                    href={`https://explorer.ambient.xyz/inference/${lastReceipt.id || lastReceipt.inference_id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-center gap-2 w-full p-3 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 rounded-lg transition-colors border border-cyan-200 group"
+                                >
+                                    <span className="text-[10px] uppercase font-black tracking-wider">View Proof on Explorer</span>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="group-hover:translate-x-0.5 transition-transform">
+                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+                                    </svg>
+                                </a>
+                            )}
                         </div>
 
                         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">

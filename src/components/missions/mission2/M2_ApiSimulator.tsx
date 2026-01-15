@@ -146,7 +146,21 @@ export default function ApiSimulator() {
                         {response.merkle_root && (
                             <div className="mt-3 p-3 bg-white rounded-lg border border-green-300">
                                 <p className="text-[9px] uppercase font-black text-green-700 mb-1">Merkle Root (Cryptographic Proof)</p>
-                                <p className="text-[11px] font-mono text-green-800 break-all">{response.merkle_root}</p>
+                                <p className="text-[11px] font-mono text-green-800 break-all mb-3">{response.merkle_root}</p>
+
+                                {(response.id || response.inference_id) && (
+                                    <a
+                                        href={`https://explorer.ambient.xyz/inference/${response.id || response.inference_id}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-2 w-full p-2 bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition-colors border border-green-300 group"
+                                    >
+                                        <span className="text-[10px] uppercase font-black tracking-wider">Verify on Explorer</span>
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="group-hover:translate-x-0.5 transition-transform">
+                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+                                        </svg>
+                                    </a>
+                                )}
                             </div>
                         )}
                     </div>
